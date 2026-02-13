@@ -34,11 +34,7 @@
                     (((int64_t)x >> 8) & 0x00000000ff000000LL) | (((int64_t)x >> 24) & 0x0000000000ff0000LL) | \
                     (((int64_t)x >> 40) & 0x000000000000ff00LL) | (((int64_t)x >> 56) & 0x00000000000000ffLL)))
 
-#if defined(__i386__)
-#define TARGET_RT_LITTLE_ENDIAN 1
-#elif defined(__x86_64__)
-#define TARGET_RT_LITTLE_ENDIAN 1
-#elif defined (TARGET_OS_WIN32)
+#if __BYTE_ORDER == __LITTLE_ENDIAN || defined(__x86_64__) || defined (TARGET_OS_WIN32)
 #define TARGET_RT_LITTLE_ENDIAN 1
 #endif
 
