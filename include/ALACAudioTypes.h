@@ -49,6 +49,12 @@ extern "C" {
 #define TARGET_RT_BIG_ENDIAN 1
 #endif
 
+#define ALAC_FOURCC(a, b, c, d) \
+        ((uint32_t)(a) << 24 | \
+        (uint32_t)(b) << 16 | \
+        (uint32_t)(c) << 8  | \
+        (uint32_t)(d))
+
 #define kChannelAtomSize 12
     
 enum 
@@ -61,8 +67,8 @@ enum
 
 enum
 {
-    kALACFormatAppleLossless = 'alac',
-    kALACFormatLinearPCM = 'lpcm'
+    kALACFormatAppleLossless = ALAC_FOURCC('a','l','a','c'),
+    kALACFormatLinearPCM = ALAC_FOURCC('l','p','c','m')
 };
 
 enum
@@ -151,7 +157,7 @@ typedef struct AudioFormatDescription  AudioFormatDescription;
 
 enum
 {
-	kALACCodecFormat		= 'alac',
+	kALACCodecFormat		= ALAC_FOURCC('a','l','a','c'),
 	kALACVersion			= 0,
 	kALACCompatibleVersion	= kALACVersion,
 	kALACDefaultFrameSize	= 4096
@@ -179,7 +185,7 @@ typedef struct ALACSpecificConfig
 // The AudioChannelLayout atom type is not exposed yet so define it here
 enum
 {
-	AudioChannelLayoutAID = 'chan'
+	AudioChannelLayoutAID = ALAC_FOURCC('c','h','a','n')
 };
 
 #if PRAGMA_STRUCT_ALIGN
