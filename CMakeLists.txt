@@ -20,7 +20,6 @@ add_library(alac
         codec/dp_dec.c
         codec/dp_enc.c
         codec/dplib.h
-        codec/EndianPortable.c
         codec/EndianPortable.h
         codec/matrix_dec.c
         codec/matrix_enc.c
