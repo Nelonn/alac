@@ -281,7 +281,7 @@ int32_t ALACEncoder::EncodeStereo( BitBuffer * bitstream, void * inputBuffer, ui
 	SearchCoefs		coefsU;
 	SearchCoefs		coefsV;
 	uint32_t			index;
-	uint8_t			partialFrame;
+	bool			partialFrame;
 	uint32_t			escapeBits;
 	bool			doEscape;
 	int32_t		status = ALAC_noErr;
@@ -310,7 +310,7 @@ int32_t ALACEncoder::EncodeStereo( BitBuffer * bitstream, void * inputBuffer, ui
 	chanBits = mBitDepth - (bytesShifted * 8) + 1;
 	
 	// flag whether or not this is a partial frame
-	partialFrame = (numSamples == mFrameSize) ? 0 : 1;
+	partialFrame = numSamples != mFrameSize;
 
 	// brute-force encode optimization loop
 	// - run over variations of the encoding params to find the best choice
@@ -435,11 +435,11 @@ int32_t ALACEncoder::EncodeStereo( BitBuffer * bitstream, void * inputBuffer, ui
 	}
 
 	// test for escape hatch if best calculated compressed size turns out to be more than the input size
-	minBits = minBits1 + minBits2 + (8 /* mixRes/maxRes/etc. */ * 8) + ((partialFrame == true) ? 32 : 0);
+	minBits = minBits1 + minBits2 + (8 /* mixRes/maxRes/etc. */ * 8) + (partialFrame ? 32 : 0);
 	if ( bytesShifted != 0 )
 		minBits += (numSamples * (bytesShifted * 8) * 2);
 
-	escapeBits = (numSamples * mBitDepth * 2) + ((partialFrame == true) ? 32 : 0) + (2 * 8);	/* 2 common header bytes */
+	escapeBits = (numSamples * mBitDepth * 2) + (partialFrame ? 32 : 0) + (2 * 8);	/* 2 common header bytes */
 
 	doEscape = (minBits >= escapeBits) ? true : false;
 
@@ -447,7 +447,7 @@ int32_t ALACEncoder::EncodeStereo( BitBuffer * bitstream, void * inputBuffer, ui
 	{
 		// write bitstream header and coefs
 		BitBufferWrite( bitstream, 0, 12 );
-		BitBufferWrite( bitstream, (partialFrame << 3) | (bytesShifted << 1), 4 );
+		BitBufferWrite( bitstream, (static_cast<uint8_t>(partialFrame) << 3) | (bytesShifted << 1), 4 );
 		if ( partialFrame )
 			BitBufferWrite( bitstream, numSamples, 32 );
 		BitBufferWrite( bitstream, mixBits, 8 );
@@ -561,7 +561,7 @@ int32_t ALACEncoder::EncodeStereoFast( BitBuffer * bitstream, void * inputBuffer
 	SearchCoefs		coefsU;
 	SearchCoefs		coefsV;
 	uint32_t			index;
-	uint8_t			partialFrame;
+	bool			partialFrame;
 	uint32_t			escapeBits;
 	bool			doEscape;	
 	int32_t		status;
@@ -590,7 +590,7 @@ int32_t ALACEncoder::EncodeStereoFast( BitBuffer * bitstream, void * inputBuffer
 	chanBits = mBitDepth - (bytesShifted * 8) + 1;
 	
 	// flag whether or not this is a partial frame
-	partialFrame = (numSamples == mFrameSize) ? 0 : 1;
+	partialFrame = numSamples != mFrameSize;
 
 	// set up default encoding parameters for "fast" mode
 	mixBits		= kDefaultMixBits;
@@ -627,7 +627,7 @@ int32_t ALACEncoder::EncodeStereoFast( BitBuffer * bitstream, void * inputBuffer
 
 	// write bitstream header and coefs
 	BitBufferWrite( bitstream, 0, 12 );
-	BitBufferWrite( bitstream, (partialFrame << 3) | (bytesShifted << 1), 4 );
+	BitBufferWrite( bitstream, (static_cast<uint8_t>(partialFrame) << 3) | (bytesShifted << 1), 4 );
 	if ( partialFrame )
 		BitBufferWrite( bitstream, numSamples, 32 );
 	BitBufferWrite( bitstream, mixBits, 8 );
@@ -683,11 +683,11 @@ int32_t ALACEncoder::EncodeStereoFast( BitBuffer * bitstream, void * inputBuffer
 	minBits2 = bits2 + (numV * sizeof(int16_t) * 8);
 
 	// test for escape hatch if best calculated compressed size turns out to be more than the input size
-	minBits = minBits1 + minBits2 + (8 /* mixRes/maxRes/etc. */ * 8) + ((partialFrame == true) ? 32 : 0);
+	minBits = minBits1 + minBits2 + (8 /* mixRes/maxRes/etc. */ * 8) + (partialFrame ? 32 : 0);
 	if ( bytesShifted != 0 )
 		minBits += (numSamples * (bytesShifted * 8) * 2);
 
-	escapeBits = (numSamples * mBitDepth * 2) + ((partialFrame == true) ? 32 : 0) + (2 * 8);	/* 2 common header bytes */
+	escapeBits = (numSamples * mBitDepth * 2) + (partialFrame ? 32 : 0) + (2 * 8);	/* 2 common header bytes */
 
 	doEscape = (minBits >= escapeBits) ? true : false;
 
@@ -732,15 +732,15 @@ int32_t ALACEncoder::EncodeStereoEscape( BitBuffer * bitstream, void * inputBuff
 {
 	int16_t *		input16;
 	int32_t *		input32;
-	uint8_t			partialFrame;
+	bool			partialFrame;
 	uint32_t			index;
 
 	// flag whether or not this is a partial frame
-	partialFrame = (numSamples == mFrameSize) ? 0 : 1;
+	partialFrame = numSamples != mFrameSize;
 
 	// write bitstream header
 	BitBufferWrite( bitstream, 0, 12 );
-	BitBufferWrite( bitstream, (partialFrame << 3) | 1, 4 );	// LSB = 1 means "frame not compressed"
+	BitBufferWrite( bitstream, (static_cast<uint8_t>(partialFrame) << 3) | 1, 4 );	// LSB = 1 means "frame not compressed"
 	if ( partialFrame )
 		BitBufferWrite( bitstream, numSamples, 32 );
 
@@ -808,7 +808,7 @@ int32_t ALACEncoder::EncodeMono( BitBuffer * bitstream, void * inputBuffer, uint
 	uint32_t			mask;
 	uint32_t			chanBits;
 	uint8_t			pbFactor;
-	uint8_t			partialFrame;
+	bool			partialFrame;
 	int16_t *		input16;
 	int32_t *		input32;
 	uint32_t			escapeBits;
@@ -837,7 +837,7 @@ int32_t ALACEncoder::EncodeMono( BitBuffer * bitstream, void * inputBuffer, uint
 	chanBits = mBitDepth - (bytesShifted * 8);
 
 	// flag whether or not this is a partial frame
-	partialFrame = (numSamples == mFrameSize) ? 0 : 1;
+	partialFrame = numSamples != mFrameSize;
 
 	// convert N-bit data to 32-bit for predictor
 	switch ( mBitDepth )
@@ -917,11 +917,11 @@ int32_t ALACEncoder::EncodeMono( BitBuffer * bitstream, void * inputBuffer, uint
 
 	// test for escape hatch if best calculated compressed size turns out to be more than the input size
 	// - first, add bits for the header bytes mixRes/maxRes/shiftU/filterU
-	minBits += (4 /* mixRes/maxRes/etc. */ * 8) + ((partialFrame == true) ? 32 : 0);
+	minBits += (4 /* mixRes/maxRes/etc. */ * 8) + (partialFrame ? 32 : 0);
 	if ( bytesShifted != 0 )
 		minBits += (numSamples * (bytesShifted * 8));
 
-	escapeBits = (numSamples * mBitDepth) + ((partialFrame == true) ? 32 : 0) + (2 * 8);	/* 2 common header bytes */
+	escapeBits = (numSamples * mBitDepth) + (partialFrame ? 32 : 0) + (2 * 8);	/* 2 common header bytes */
 
 	doEscape = (minBits >= escapeBits) ? true : false;
 
@@ -929,7 +929,7 @@ int32_t ALACEncoder::EncodeMono( BitBuffer * bitstream, void * inputBuffer, uint
 	{
 		// write bitstream header
 		BitBufferWrite( bitstream, 0, 12 );
-		BitBufferWrite( bitstream, (partialFrame << 3) | (bytesShifted << 1), 4 );
+		BitBufferWrite( bitstream, (static_cast<uint8_t>(partialFrame) << 3) | (bytesShifted << 1), 4 );
 		if ( partialFrame )
 			BitBufferWrite( bitstream, numSamples, 32 );
 		BitBufferWrite( bitstream, 0, 16 );								// mixBits = mixRes = 0
@@ -973,7 +973,7 @@ int32_t ALACEncoder::EncodeMono( BitBuffer * bitstream, void * inputBuffer, uint
 	{
 		// write bitstream header and coefs
 		BitBufferWrite( bitstream, 0, 12 );
-		BitBufferWrite( bitstream, (partialFrame << 3) | 1, 4 );	// LSB = 1 means "frame not compressed"
+		BitBufferWrite( bitstream, (static_cast<uint8_t>(partialFrame) << 3) | 1, 4 );	// LSB = 1 means "frame not compressed"
 		if ( partialFrame )
 			BitBufferWrite( bitstream, numSamples, 32 );
 
