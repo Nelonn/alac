@@ -32,10 +32,11 @@
 #include <stdint.h>
 
 #include "ALACAudioTypes.h"
+#include "ALACLib.h"
 
 struct BitBuffer;
 
-class ALACDecoder
+class ALAC_EXPORT ALACDecoder
 {
 	public:
 		ALACDecoder();

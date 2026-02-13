@@ -27,11 +27,12 @@
 #include <stdint.h>
 
 #include "ALACAudioTypes.h"
+#include "ALACLib.h"
 
 
 struct BitBuffer;
 
-class ALACEncoder
+class ALAC_EXPORT ALACEncoder
 {
 	public:
 		ALACEncoder();

@@ -29,6 +29,8 @@
 
 #include <stdint.h>
 
+#include "ALACLib.h"
+
 #ifndef MIN
 #define MIN(x, y) 			( (x)<(y) ?(x) :(y) )
 #endif //MIN
@@ -82,19 +84,32 @@ typedef struct BitBuffer
 	- these routines take a fixed size buffer and read/write to it
 	- bounds checking must be done by the client
 */
-void	BitBufferInit( BitBuffer * bits, uint8_t * buffer, uint32_t byteSize );
-uint32_t	BitBufferRead( BitBuffer * bits, uint8_t numBits );   // note: cannot read more than 16 bits at a time
+ALAC_EXPORT
+void BitBufferInit( BitBuffer * bits, uint8_t * buffer, uint32_t byteSize );
+ALAC_EXPORT
+uint32_t BitBufferRead( BitBuffer * bits, uint8_t numBits );   // note: cannot read more than 16 bits at a time
+ALAC_EXPORT
 uint8_t	BitBufferReadSmall( BitBuffer * bits, uint8_t numBits );
+ALAC_EXPORT
 uint8_t	BitBufferReadOne( BitBuffer * bits );
-uint32_t	BitBufferPeek( BitBuffer * bits, uint8_t numBits );   // note: cannot read more than 16 bits at a time
-uint32_t	BitBufferPeekOne( BitBuffer * bits );
-uint32_t	BitBufferUnpackBERSize( BitBuffer * bits );
-uint32_t	BitBufferGetPosition( BitBuffer * bits );
-void	BitBufferByteAlign( BitBuffer * bits, int32_t addZeros );
-void	BitBufferAdvance( BitBuffer * bits, uint32_t numBits );
-void	BitBufferRewind( BitBuffer * bits, uint32_t numBits );
-void	BitBufferWrite( BitBuffer * bits, uint32_t value, uint32_t numBits );
-void	BitBufferReset( BitBuffer * bits);
+ALAC_EXPORT
+uint32_t BitBufferPeek( BitBuffer * bits, uint8_t numBits );   // note: cannot read more than 16 bits at a time
+ALAC_EXPORT
+uint32_t BitBufferPeekOne( BitBuffer * bits );
+ALAC_EXPORT
+uint32_t BitBufferUnpackBERSize( BitBuffer * bits );
+ALAC_EXPORT
+uint32_t BitBufferGetPosition( BitBuffer * bits );
+ALAC_EXPORT
+void BitBufferByteAlign( BitBuffer * bits, int32_t addZeros );
+ALAC_EXPORT
+void BitBufferAdvance( BitBuffer * bits, uint32_t numBits );
+ALAC_EXPORT
+void BitBufferRewind( BitBuffer * bits, uint32_t numBits );
+ALAC_EXPORT
+void BitBufferWrite( BitBuffer * bits, uint32_t value, uint32_t numBits );
+ALAC_EXPORT
+void BitBufferReset( BitBuffer * bits);
 
 
 #ifdef __cplusplus
