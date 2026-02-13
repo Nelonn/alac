@@ -10,13 +10,10 @@ add_library(alac
         codec/ag_dec.c
         codec/ag_enc.c
         codec/aglib.h
-        codec/ALACAudioTypes.h
         codec/ALACBitUtilities.c
         codec/ALACBitUtilities.h
         codec/ALACDecoder.cpp
-        codec/ALACDecoder.h
         codec/ALACEncoder.cpp
-        codec/ALACEncoder.h
         codec/dp_dec.c
         codec/dp_enc.c
         codec/dplib.h
@@ -24,4 +21,9 @@ add_library(alac
         codec/matrix_dec.c
         codec/matrix_enc.c
         codec/matrixlib.h
+        include/ALACAudioTypes.h
+        include/ALACDecoder.h
+        include/ALACEncoder.h
 )
+
+target_include_directories(alac PUBLIC include)
