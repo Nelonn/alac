@@ -32,8 +32,7 @@ target_include_directories(alac PUBLIC
         $<INSTALL_INTERFACE:include>
 )
 
-get_target_property(ALAC_LIB_TYPE alac TYPE)
-if (ALAC_LIB_TYPE STREQUAL "SHARED_LIBRARY")
+if (BUILD_SHARED_LIBS)
     target_compile_definitions(alac PRIVATE ALAC_DYNAMIC)
     target_compile_definitions(alac INTERFACE ALAC_DYNAMIC_IMPORT)
 endif ()
