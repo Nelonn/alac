@@ -9,11 +9,9 @@
 #endif
 
 #if defined(ALAC_DYNAMIC_IMPORT)
-#if defined(ALAC_DYNAMIC)
-#define ALAC_EXPORT ALAC_DLL_EXPORT
-#else
 #define ALAC_EXPORT ALAC_DLL_IMPORT
-#endif
+#elif defined(ALAC_DYNAMIC)
+#define ALAC_EXPORT ALAC_DLL_EXPORT
 #else
 #define ALAC_EXPORT
 #endif
