@@ -40,7 +40,9 @@ extern "C" {
                    (((int64_t)x >> 8) & 0x00000000ff000000LL) | (((int64_t)x >> 24) & 0x0000000000ff0000LL) | \
                    (((int64_t)x >> 40) & 0x000000000000ff00LL) | (((int64_t)x >> 56) & 0x00000000000000ffLL)))
 
-#if __BYTE_ORDER__ == __LITTLE_ENDIAN__
+#if defined(__clang__) && __BYTE_ORDER__ == __ORDER_LITTLE_ENDIAN__
+#define TARGET_RT_LITTLE_ENDIAN 1
+#elif __BYTE_ORDER__ == __LITTLE_ENDIAN__
 #define TARGET_RT_LITTLE_ENDIAN 1
 #endif
 
