@@ -42,7 +42,7 @@ class ALAC_EXPORT ALACDecoder
 		ALACDecoder();
 		~ALACDecoder();
 
-		int32_t	Init( void * inMagicCookie, uint32_t inMagicCookieSize );
+		int32_t	Init( const uint8_t* inMagicCookie, uint32_t inMagicCookieSize );
 		int32_t	Decode( struct BitBuffer * bits, uint8_t * sampleBuffer, uint32_t numSamples, uint32_t numChannels, uint32_t * outNumSamples );
 
 	public:

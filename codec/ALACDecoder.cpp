@@ -85,11 +85,10 @@ ALACDecoder::~ALACDecoder()
 	Init()
 	- initialize the decoder with the given configuration
 */
-int32_t ALACDecoder::Init( void * inMagicCookie, uint32_t inMagicCookieSize )
+int32_t ALACDecoder::Init( const uint8_t* theActualCookie, uint32_t inMagicCookieSize )
 {
 	int32_t		status = ALAC_noErr;
     ALACSpecificConfig theConfig;
-    uint8_t * theActualCookie = (uint8_t *)inMagicCookie;
     uint32_t theCookieBytesRemaining = inMagicCookieSize;
 
     // For historical reasons the decoder needs to be resilient to magic cookies vended by older encoders.
