@@ -45,6 +45,15 @@ set_target_properties(alac PROPERTIES
 
 add_library(alac::alac ALIAS alac)
 
+# Off by default so projects consuming this through cmake-install don't build it.
+option(ALAC_BUILD_TESTS "Build the decoder tests" OFF)
+if (ALAC_BUILD_TESTS)
+    enable_testing()
+    add_executable(alac_decode_bounds_test tests/decode_bounds_test.cpp)
+    target_link_libraries(alac_decode_bounds_test PRIVATE alac)
+    add_test(NAME alac_decode_bounds_test COMMAND alac_decode_bounds_test)
+endif ()
+
 include(GNUInstallDirs)
 
 install(TARGETS alac

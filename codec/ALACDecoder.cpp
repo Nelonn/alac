@@ -196,9 +196,16 @@ int32_t ALACDecoder::Decode( BitBuffer * bits, uint8_t * sampleBuffer, uint32_t 
 	int32_t				val;
 	uint32_t			i, j;
 	int32_t             status;
-	
+	uint32_t			maxSamples;
+
 	RequireAction( (bits != nil) && (sampleBuffer != nil) && (outNumSamples != nil), return kALAC_ParamError; );
 	RequireAction( numChannels > 0, return kALAC_ParamError; );
+
+	// the predictor and mix buffers only hold mConfig.frameLength samples
+	RequireAction( numSamples <= mConfig.frameLength, return kALAC_ParamError; );
+
+	// partial frames overwrite numSamples, and this is all we know about the size of sampleBuffer
+	maxSamples = numSamples;
 
 	mActiveElements = 0;
 	channelIndex	= 0;
@@ -250,6 +257,7 @@ int32_t ALACDecoder::Decode( BitBuffer * bits, uint8_t * sampleBuffer, uint32_t 
 				{
 					numSamples  = BitBufferRead( bits, 16 ) << 16;
 					numSamples |= BitBufferRead( bits, 16 );
+					RequireAction( numSamples <= maxSamples, status = kALAC_ParamError; goto Exit; );
 				}
 
 				if ( escapeFlag == 0 )
@@ -401,6 +409,7 @@ int32_t ALACDecoder::Decode( BitBuffer * bits, uint8_t * sampleBuffer, uint32_t 
 				{
 					numSamples  = BitBufferRead( bits, 16 ) << 16;
 					numSamples |= BitBufferRead( bits, 16 );
+					RequireAction( numSamples <= maxSamples, status = kALAC_ParamError; goto Exit; );
 				}
 
 				if ( escapeFlag == 0 )
